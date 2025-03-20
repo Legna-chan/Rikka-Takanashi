@@ -1,5 +1,5 @@
 import { exec } from 'child_process';
-import { owner } from '../settings.mjs'; // Asegúrate de que la ruta sea correcta
+import { owner } from '../settings.mjs';
 
 export default {
     commands: ["update"],
