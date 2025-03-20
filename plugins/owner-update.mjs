@@ -19,14 +19,14 @@ export default {
         // Verificar si el usuario que ejecuta el comando es el owner
         const senderNumber = m.sender.split("@")[0]; // Obtener solo el número sin @s.whatsapp.net
         if (!owner.includes(senderNumber)) {
-            return wss.sendMessage(m.chat, { text: "❌ No tienes permiso para ejecutar este comando." }, { quoted: m });
+            return wss.sendMessage(m.chat, { text: "✐ No tienes permiso para ejecutar este comando." }, { quoted: m });
         }
 
-        await wss.sendMessage(m.chat, { text: "🔄 Actualizando el bot..." }, { quoted: m });
+        await wss.sendMessage(m.chat, { text: "❀ Actualizando el bot..." }, { quoted: m });
 
         exec("git pull", async (err, stdout, stderr) => {
             if (err) {
-                await wss.sendMessage(m.chat, { text: `❌ Error: No se pudo realizar la actualización.\nRazón: ${err.message}` }, { quoted: m });
+                await wss.sendMessage(m.chat, { text: `✰ Error: No se pudo realizar la actualización.\nRazón: ${err.message}` }, { quoted: m });
                 return;
             }
 
@@ -35,9 +35,9 @@ export default {
             }
 
             if (stdout.includes("Already up to date.")) {
-                await wss.sendMessage(m.chat, { text: "✅ El bot ya está actualizado." }, { quoted: m });
+                await wss.sendMessage(m.chat, { text: "❏ El bot ya está actualizado." }, { quoted: m });
             } else {
-                await wss.sendMessage(m.chat, { text: `✅ Actualización realizada con éxito.\n\n${stdout}` }, { quoted: m });
+                await wss.sendMessage(m.chat, { text: `❀ Actualización realizada con éxito.\n\n${stdout}` }, { quoted: m });
             }
         });
     }
