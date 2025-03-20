@@ -1,0 +1,38 @@
+    {
+  "name": "Rikka Takanashi",
+  "version": "1.0.0",
+  "description": "Bot muy simple para whatsapp",
+  "main": "index.mjs",
+  "type": "module",
+  "scripts": {
+    "start": "node index.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanixlJs/Eva-Wa-Bot.git"
+  },
+  "keywords": [
+    "whatsapp",
+    "bot",
+    "baileys",
+    "node",
+    "nodejs"
+  ],
+  "author": " Legna",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DanixlJs/Eva-Wa-Bot/issues"
+  },
+  "homepage": "https://github.com/DanixlJs/Eva-Wa-Bot#readme",
+  "dependencies": {
+    "@cacheable/node-cache": "1.5.2",
+    "@hapi/boom": "10.0.1",
+    "@whiskeysockets/baileys": "6.7.12",
+    "cfonts": "3.3.0",
+    "chalk": "5.4.1",
+    "lowdb": "7.0.1",
+    "pino": "9.6.0",
+    "qrcode-terminal": "0.12.0", 
+    "node-fetch": "3.3.2"
+  }
+}
