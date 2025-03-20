@@ -1,4 +1,3 @@
-
 export default {
     commands: ["menu", "help"],
     description: "Muestra los comandos disponibles.",
