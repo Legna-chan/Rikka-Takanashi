@@ -1,5 +1,5 @@
 import { exec } from 'child_process';
-import './config.mjs';
+import './settings.mjs';
 
 export default {
     commands: ["update"],
