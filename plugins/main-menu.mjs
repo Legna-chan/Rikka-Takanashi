@@ -25,6 +25,6 @@ export default {
                 menu += `> _${plugin.description}_\n`;
             }
         }
-        await wss.sendMessage(m.chat, { image: { url: "https://qu.ax/JmOSN.jpg" }, caption: menu, mentions: [m.sender] }, { quoted: m });
+        await wss.sendMessage(m.chat, { image: { url: "https://qu.ax/qHTkG.jpg" }, caption: menu, mentions: [m.sender] }, { quoted: m });
     }
 }
