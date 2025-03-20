@@ -3,7 +3,7 @@ import { owner } from '../settings.mjs'; // Asegúrate de que la ruta sea correc
 
 export default {
     commands: ["update"],
-    description: "Actualiza el bot desde el repositorio remoto.",
+    description: "Actualiza el bot desde el repositorio de github.",
     category: "owner",
     flags: [],
     rowner: true, // Solo el dueño del bot puede ejecutar este comando.
