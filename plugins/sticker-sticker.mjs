@@ -13,15 +13,15 @@ export default {
       let q = m.quoted ? m.quoted : m;
       let mime = (q.msg || q).mimetype || q.mediaType || '';
 
-      // Verificar si mime no es undefined y si contiene un valor válido
+      // Verificación para asegurarnos de que mime esté bien definido
       if (mime && /webp|image|video/g.test(mime)) {
         if (/video/g.test(mime) && (q.msg || q).seconds > 15) {
           return wss.sendMessage(m.chat, { text: `❌ ¡El video no puede durar más de 15 segundos!` }, { quoted: m });
         }
 
         let img = await q.download?.();
-        
-        // Asegurarnos de que la imagen se haya descargado correctamente
+
+        // Verificación para asegurarnos de que la imagen se descargue correctamente
         if (!img) {
           return wss.sendMessage(m.chat, { text: `❌ Por favor, envía una imagen o video para hacer un sticker.` }, { quoted: m });
         }
@@ -30,8 +30,8 @@ export default {
         try {
           // Obtener los valores para los textos del sticker
           const packstickers = await getUserStickerPack(m.sender);
-          const texto1 = packstickers?.text1 || 'Mi Sticker Pack';
-          const texto2 = packstickers?.text2 || 'Sticker Bot';
+          const texto1 = packstickers?.text1 || 'Mi Sticker Pack'; // Texto por defecto
+          const texto2 = packstickers?.text2 || 'Sticker Bot';      // Texto por defecto
 
           // Intentar crear el sticker
           stiker = await sticker(img, false, texto1, texto2);
@@ -44,7 +44,7 @@ export default {
             else if (/image/g.test(mime)) out = await uploadImage(img);
             else if (/video/g.test(mime)) out = await uploadFile(img);
 
-            // Si out no es una cadena de texto, se intenta con la imagen
+            // Si 'out' no es una cadena de texto, lo intentamos con la imagen
             if (typeof out !== 'string') out = await uploadImage(img);
             stiker = await sticker(false, out, 'Sticker Pack', 'Sticker Bot');
           }
@@ -70,18 +70,24 @@ export default {
   }
 };
 
-// Función para obtener la configuración del usuario (puedes ajustar esta parte a tu lógica)
-const getUserStickerPack = (userId) => {
-  // Aquí podrías hacer que obtengas los datos del usuario desde una base de datos o configurarlos manualmente
-  return {
-    text1: 'Pack Personalizado', // Puedes cambiar estos valores
-    text2: 'Bot de Stickers',
+// Función para obtener la configuración del usuario (puedes ajustarlo a tu lógica)
+const getUserStickerPack = async (userId) => {
+  // Aquí, verificamos si 'userId' existe y que los datos de stickers están disponibles.
+  const userStickerPack = {
+    text1: 'Pack Personalizado', // Cambia esto según tu necesidad
+    text2: 'Bot de Stickers',    // Cambia esto según tu necesidad
   };
+
+  // Si no hay datos del usuario, devuelve valores predeterminados
+  if (!userStickerPack || !userStickerPack.text1 || !userStickerPack.text2) {
+    return { text1: 'Sticker Pack', text2: 'Sticker Bot' };
+  }
+
+  return userStickerPack;
 };
 
 // Función para validar si el texto es una URL válida
 const isUrl = (text) => {
-  // Verificamos que el texto no sea undefined ni nulo antes de hacer la validación
   if (text && typeof text === 'string') {
     return text.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(jpe?g|gif|png)/, 'gi'));
   }
