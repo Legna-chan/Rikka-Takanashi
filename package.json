@@ -36,6 +36,8 @@
     "node-fetch": "3.3.2", 
     "form-data": "^4.0.0", 
     "file-type": "^18.0.0", 
-    "jsdom": "^20.0.1"
+    "jsdom": "^20.0.1", 
+    "fluent-ffmpeg": "^2.1.2", 
+    "node-webpmux": "^0.0.11"
   }
 }
