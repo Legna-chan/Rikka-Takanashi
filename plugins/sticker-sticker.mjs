@@ -12,18 +12,18 @@ export default {
     try {
       let q = m.quoted ? m.quoted : m;
       let mime = (q.msg || q).mimetype || q.mediaType || '';
-      
+
       if (/webp|image|video/g.test(mime)) {
         if (/video/g.test(mime) && (q.msg || q).seconds > 15) {
           return wss.sendMessage(m.chat, { text: `❌ ¡El video no puede durar más de 15 segundos!` }, { quoted: m });
         }
-        
+
         let img = await q.download?.();
-        
+
         if (!img) {
           return wss.sendMessage(m.chat, { text: `❌ Por favor, envía una imagen o video para hacer un sticker.` }, { quoted: m });
         }
-        
+
         let out;
         try {
           const packstickers = global.db.data.users[m.sender];
