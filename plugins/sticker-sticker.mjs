@@ -10,47 +10,53 @@ export default {
   exec: async (wss, { m, args, usedPrefix, command }) => {
     let stiker = false;
     try {
-      // Verificar si el mensaje tiene una imagen o video
+      // Verificar si m.quoted está definido, si no, asignamos m
       let q = m.quoted ? m.quoted : m;
-      let mime = (q.msg || q).mimetype || q.mediaType || '';
+      console.log('q:', q);  // Registra el valor de q para verificar
 
-      // Asegurarnos de que mime esté definido antes de proceder
+      // Verifica que 'mime' esté bien definido
+      let mime = (q.msg || q).mimetype || q.mediaType || '';
+      console.log('mime:', mime);  // Registra el tipo de mime
+
       if (mime && /webp|image|video/g.test(mime)) {
         if (/video/g.test(mime) && (q.msg || q).seconds > 15) {
           return wss.sendMessage(m.chat, { text: `❌ ¡El video no puede durar más de 15 segundos!` }, { quoted: m });
         }
 
+        // Verificar que la descarga sea posible
         let img = await q.download?.();
+        console.log('img:', img);  // Registra la descarga de la imagen
 
-        // Verificar si la imagen se descargó correctamente
         if (!img) {
           return wss.sendMessage(m.chat, { text: `❌ Por favor, envía una imagen o video para hacer un sticker.` }, { quoted: m });
         }
 
         let out;
         try {
-          // Aquí se asignan los textos predeterminados para el sticker
-          const texto1 = 'Sticker Pack'; // Texto de ejemplo
-          const texto2 = 'Sticker Bot';  // Texto de ejemplo
+          // Definir los textos predeterminados para el sticker
+          const texto1 = 'Sticker Pack';  // Texto de ejemplo
+          const texto2 = 'Sticker Bot';   // Texto de ejemplo
 
-          // Generar el sticker
+          // Verificar que los textos sean cadenas antes de pasarlas a la función sticker
+          console.log('Texto1:', texto1, 'Texto2:', texto2);  // Registra los textos
+
           stiker = await sticker(img, false, texto1, texto2);
+          console.log('Sticker generado:', stiker);  // Verifica si el sticker fue generado
         } catch (e) {
           console.error('Error al generar el sticker:', e);
         } finally {
-          // Si no se pudo generar el sticker, se intentan otras opciones
+          // Intentar generar el sticker con otro formato si el anterior falla
           if (!stiker) {
             if (/webp/g.test(mime)) out = await webp2png(img);
             else if (/image/g.test(mime)) out = await uploadImage(img);
             else if (/video/g.test(mime)) out = await uploadFile(img);
 
-            // Si 'out' no es una cadena de texto, probamos con la imagen
             if (typeof out !== 'string') out = await uploadImage(img);
             stiker = await sticker(false, out, 'Sticker Pack', 'Sticker Bot');
           }
         }
       } else if (args[0]) {
-        // Si el primer argumento es un URL, intentamos generar un sticker a partir de ese URL
+        // Verificar si el primer argumento es una URL válida
         if (isUrl(args[0])) {
           stiker = await sticker(false, args[0], 'Sticker Pack', 'Sticker Bot');
         } else {
@@ -61,6 +67,7 @@ export default {
       console.error('Error inesperado:', e);
       if (!stiker) stiker = e;
     } finally {
+      // Verifica si se generó un sticker, si no, responde con un mensaje
       if (stiker) {
         wss.sendFile(m.chat, stiker, 'sticker.webp', '', m);
       } else {
