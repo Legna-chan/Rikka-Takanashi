@@ -34,7 +34,7 @@
     "pino": "9.6.0",
     "qrcode-terminal": "0.12.0",
     "node-fetch": "3.3.2",
-    "form-data": "^4.0.0",
+    "formdata-node": "^4.0.0",
     "file-type": "^18.0.0",
     "jsdom": "^20.0.1",
     "fluent-ffmpeg": "^2.1.2",
