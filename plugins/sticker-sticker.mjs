@@ -1,7 +1,7 @@
-import { sticker } from '../lib/sticker.js';
-import uploadFile from '../lib/uploadFile.js';
-import uploadImage from '../lib/uploadImage.js';
-import { webp2png } from '../lib/webp2mp4.js';
+import { sticker } from '../lib/sticker.mjs';
+import uploadFile from '../lib/uploadFile.mjs';
+import uploadImage from '../lib/uploadImage.mjs';
+import { webp2png } from '../lib/webp2mp4.mjs';
 
 export default {
   commands: ['sticker', 's', 'stiker'], // Comandos que activan el handler
