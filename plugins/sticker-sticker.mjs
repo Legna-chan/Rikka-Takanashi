@@ -19,7 +19,7 @@ export default {
       let mime = (q.msg || q).mimetype || q.mediaType || '';
       console.log('mime:', mime);  // Registra el tipo de mime
 
-      // Verifica que mime sea válido antes de proceder
+      // Verifica si 'mime' está definido y contiene un valor válido
       if (mime && /webp|image|video/g.test(mime)) {
         // Verificar que el video no sea mayor a 15 segundos
         if (/video/g.test(mime) && (q.msg || q).seconds > 15) {
@@ -53,9 +53,13 @@ export default {
         } finally {
           // Si no se pudo generar el sticker, probamos con otros formatos
           if (!stiker) {
-            if (/webp/g.test(mime)) out = await webp2png(img);
-            else if (/image/g.test(mime)) out = await uploadImage(img);
-            else if (/video/g.test(mime)) out = await uploadFile(img);
+            if (/webp/g.test(mime)) {
+              if (img) out = await webp2png(img);
+            } else if (/image/g.test(mime)) {
+              if (img) out = await uploadImage(img);
+            } else if (/video/g.test(mime)) {
+              if (img) out = await uploadFile(img);
+            }
 
             // Si 'out' no es un string, probamos con otra imagen
             if (typeof out !== 'string') out = await uploadImage(img);
