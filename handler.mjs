@@ -91,10 +91,10 @@ export default async function handler(wss, m) {
         // Agrega más según tus necesidades.
         if (/^[.#+!]$/.test(usedPrefix) && plugin) {
             if (db.data.settings.grouponly && !m.isGroup) {
-                return;
+                return await wss.sendMessage(m.chat, { text: "Este comando solo puede ser ejecutado en grupos.", mentions: [m.sender] }, { quoted: m });
             }
             if (db.data.settings.privateonly && m.isGroup) {
-                return;
+                return await wss.sendMessage(m.chat, { text: "Este comando solo puede ser ejecutado en chats privados.", mentions: [m.sender] }, { quoted: m });
             }
 
             /**
