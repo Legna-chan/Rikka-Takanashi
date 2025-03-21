@@ -10,27 +10,20 @@ export default {
   exec: async (wss, { m, args, usedPrefix, command }) => {
     let stiker = false;
     try {
-      let q = m.quoted ? m.quoted : m; // Verificamos que m.quoted esté definido
-      console.log('m.quoted:', m.quoted);
-      console.log('q:', q); // Verificamos que q esté correctamente asignado
+      let q = m.quoted ? m.quoted : m;
+      console.log('Mensaje completo: ', m);
+      console.log('Mensaje citado: ', m.quoted);
 
-      // Usamos una comprobación más robusta para obtener el mime
-      let mime = '';
-      if (q && (q.msg || q).mimetype) {
-        mime = (q.msg || q).mimetype;
-      } else if (q.mediaType) {
-        mime = q.mediaType;
-      }
-
-      console.log('mime:', mime); // Verificamos qué tipo de mime estamos obteniendo
+      let mime = (q.msg || q).mimetype || q.mediaType || '';
+      console.log('MIME: ', mime);
 
       if (/webp|image|video/g.test(mime)) {
-        // Comprobamos si es video y si dura más de 15 segundos
         if (/video/g.test(mime) && (q.msg || q).seconds > 15) {
           return wss.sendMessage(m.chat, { text: `❌ ¡El video no puede durar más de 15 segundos!` }, { quoted: m });
         }
 
         let img = await q.download?.();
+        console.log('Imagen descargada: ', img);
 
         if (!img) {
           return wss.sendMessage(m.chat, { text: `❌ Por favor, envía una imagen o video para hacer un sticker.` }, { quoted: m });
@@ -43,20 +36,20 @@ export default {
           const texto2 = packstickers?.text2 || `${global.packsticker2}`;
 
           stiker = await sticker(img, false, texto1, texto2);
+          console.log('Sticker generado con éxito');
         } catch (e) {
-          console.error('Error al crear sticker:', e);
+          console.error('Error al generar el sticker: ', e);
         } finally {
           if (!stiker) {
             if (/webp/g.test(mime)) out = await webp2png(img);
             else if (/image/g.test(mime)) out = await uploadImage(img);
             else if (/video/g.test(mime)) out = await uploadFile(img);
-
             if (typeof out !== 'string') out = await uploadImage(img);
             stiker = await sticker(false, out, global.packsticker, global.packsticker2);
+            console.log('Sticker generado en el bloque finally');
           }
         }
       } else if (args[0]) {
-        console.log('args[0]:', args[0]); // Verificamos el primer argumento
         if (isUrl(args[0])) {
           stiker = await sticker(false, args[0], global.packsticker, global.packsticker2);
         } else {
@@ -64,7 +57,7 @@ export default {
         }
       }
     } catch (e) {
-      console.error('Error general:', e);
+      console.error('Error inesperado: ', e);
       if (!stiker) stiker = e;
     } finally {
       if (stiker) {
