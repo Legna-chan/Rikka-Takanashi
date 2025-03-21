@@ -1,2 +1,2 @@
-// config.mjs
-global.owner = ['5216671548329']; // Número del propietario
+// settings.mjs
+export const owner = ['5216671548329']; // Número del propietario

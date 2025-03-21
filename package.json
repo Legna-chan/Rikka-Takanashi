@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DanixlJs/Eva-Wa-Bot.git"
+    "url": "git+https://github.com/Legna-chan/Rikka-Takanashi.git"
   },
   "keywords": [
     "whatsapp",
@@ -21,9 +21,9 @@
   "author": " Legna",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/DanixlJs/Eva-Wa-Bot/issues"
+    "url": "https://github.com/Legna-chan/Rikka-Takanashi/issues"
   },
-  "homepage": "https://github.com/DanixlJs/Eva-Wa-Bot#readme",
+  "homepage": "https://github.com/Legna-chan/Rikka-Takanashi#readme",
   "dependencies": {
     "@cacheable/node-cache": "1.5.2",
     "@hapi/boom": "10.0.1",

@@ -1,13 +1,3 @@
-/**
- * Este es un ejemplo de como se veria un plugin.
- * 
- * - Recordemos que la estructura de nuestro plugin es:
- * commands => Array<string>, osea: ["comando1", "comando2", ...]
- * description => string, osea: "Descripción del comando"
- * category => string, osea: "categoria"
- * flags => Array<string>, osea: ["bandera1", "bandera2", ...]
- * exec => Promise<void>, osea: async (wss, { m, ...}) {}
- */
 export default {
     commands: ["menu", "help"],
     description: "Muestra los comandos disponibles.",
@@ -35,6 +25,6 @@ export default {
                 menu += `> _${plugin.description}_\n`;
             }
         }
-        await wss.sendMessage(m.chat, { image: { url: "https://qu.ax/JmOSN.jpg" }, caption: menu, mentions: [m.sender] }, { quoted: m });
+        await wss.sendMessage(m.chat, { image: { url: "https://qu.ax/qHTkG.jpg" }, caption: menu, mentions: [m.sender] }, { quoted: m });
     }
 }
