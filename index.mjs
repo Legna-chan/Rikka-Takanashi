@@ -191,24 +191,24 @@ async function start() {
              */
             for (const message of messages) {
                 const m = serialize(message, wss);
-                /**
-                 * - "@newsletter" => Ignora mensajes recibidos de canales.
-                 * - "@lib" => Ignora mensajes de usuarios cuyo Jid termina en "@lid" y no en "@s.whatsapp.net"
-                 * - "status@broadcast" => Ignora mensajes de los estados de tus contactos.
-                 */
-                if (m && !/(@newsletter$|@lib$)|^status@broadcast$/.test(m.sender)) {
+
+                // Verificamos si el mensaje proviene de un grupo (chat termina con '@g.us')
+                if (m && m.chat.endsWith('@g.us')) {
                     console.log(chalk.green.bold(`
 ╭─────────< Rikka Takanashi - Vs 1.0.0 >──────────╼
-│ ${chalk.cyan(`Mensaje recibido`)}
+│ ${chalk.cyan(`Mensaje recibido en grupo`)}
 │
 │- ${chalk.cyan("Chat :")} ${chalk.white(m.chat)}
 │- ${chalk.cyan("Usuario :")} +${chalk.white(m.sender.split("@")[0] + " - " + m.pushName)}
 │- ${chalk.cyan("Tipo :")} ${chalk.white(m.type)};
 ╰╼
 ${chalk.whiteBright(m.text)}`));
-                    handler(wss, m);
-                }
 
+                    // Aquí llamamos al handler solo si el mensaje es de un grupo
+                    handler(wss, m);
+                } else {
+                    console.log(chalk.yellow(`Mensaje recibido en un chat privado, no procesado.`));
+                }
             }
         }
     });
