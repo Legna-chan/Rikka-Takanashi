@@ -92,11 +92,13 @@ export default async function handler(wss, m) {
         if (/^[.#+!]$/.test(usedPrefix) && plugin) {
             // Verificamos si el mensaje proviene de un chat privado
             if (!m.isGroup) {
-                return await wss.sendMessage(m.chat, { text: "Este comando no se puede ejecutar en privado. Debes hacerlo en un grupo.", mentions: [m.sender] }, { quoted: m });
+                // En caso de que el mensaje sea privado, enviamos un mensaje de advertencia
+                await wss.sendMessage(m.chat, { text: "Este comando no se puede ejecutar en privado. Debes hacerlo en un grupo.", mentions: [m.sender] }, { quoted: m });
+                return; // Salimos de la función y evitamos la ejecución del comando
             }
 
             /**
-             * Aqui procesamos el plugin, usaremos try-catch para capturar cualquier error que ocurra a la hora de procesar el plugin.
+             * Aquí procesamos el plugin, usaremos try-catch para capturar cualquier error que ocurra a la hora de procesar el plugin.
              */
             try {
                 /**
