@@ -32,7 +32,10 @@
     "chalk": "5.4.1",
     "lowdb": "7.0.1",
     "pino": "9.6.0",
-    "qrcode-terminal": "0.12.0", 
+    "qrcode-terminal": "0.12.0"
     "node-fetch": "3.3.2"
+    "form-data": "6.0.3"
+    "file-type": "16.5.3", 
+    "jsdom": "19.0.0"
   }
 }
