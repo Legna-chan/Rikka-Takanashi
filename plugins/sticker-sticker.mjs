@@ -11,10 +11,12 @@ export default {
     let stiker = false;
     try {
       let q = m.quoted ? m.quoted : m;
-      let mime = (q.msg || q).mimetype || q.mediaType || '';
+      console.log('q:', q); // Verificamos si m.quoted está bien definido
+      let mime = (q?.msg || q)?.mimetype || q?.mediaType || '';
+      console.log('mime:', mime); // Verificamos qué tipo de mime estamos obteniendo
 
       if (/webp|image|video/g.test(mime)) {
-        if (/video/g.test(mime) && (q.msg || q).seconds > 15) {
+        if (/video/g.test(mime) && (q?.msg || q)?.seconds > 15) {
           return wss.sendMessage(m.chat, { text: `❌ ¡El video no puede durar más de 15 segundos!` }, { quoted: m });
         }
 
@@ -32,17 +34,19 @@ export default {
 
           stiker = await sticker(img, false, texto1, texto2);
         } catch (e) {
-          console.error(e);
+          console.error('Error al crear sticker:', e);
         } finally {
           if (!stiker) {
             if (/webp/g.test(mime)) out = await webp2png(img);
             else if (/image/g.test(mime)) out = await uploadImage(img);
             else if (/video/g.test(mime)) out = await uploadFile(img);
+
             if (typeof out !== 'string') out = await uploadImage(img);
             stiker = await sticker(false, out, global.packsticker, global.packsticker2);
           }
         }
       } else if (args[0]) {
+        console.log('args[0]:', args[0]); // Verificamos el primer argumento
         if (isUrl(args[0])) {
           stiker = await sticker(false, args[0], global.packsticker, global.packsticker2);
         } else {
@@ -50,7 +54,7 @@ export default {
         }
       }
     } catch (e) {
-      console.error(e);
+      console.error('Error general:', e);
       if (!stiker) stiker = e;
     } finally {
       if (stiker) {
