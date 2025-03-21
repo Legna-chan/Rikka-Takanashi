@@ -11,35 +11,30 @@ export default {
     let stiker = false;
     try {
       let q = m.quoted ? m.quoted : m;
-      console.log('Mensaje completo: ', m);
-      console.log('Mensaje citado: ', m.quoted);
-
       let mime = (q.msg || q).mimetype || q.mediaType || '';
-      console.log('MIME: ', mime);
 
-      // Verificar si el MIME contiene tipos válidos (webp, imagen, video)
-      if (/webp|image|video/g.test(mime)) {
+      // Verificar si mime no es undefined y si contiene un valor válido
+      if (mime && /webp|image|video/g.test(mime)) {
         if (/video/g.test(mime) && (q.msg || q).seconds > 15) {
           return wss.sendMessage(m.chat, { text: `❌ ¡El video no puede durar más de 15 segundos!` }, { quoted: m });
         }
 
         let img = await q.download?.();
-        console.log('Imagen descargada: ', img);
-
-        // Verificar si se descargó correctamente la imagen o archivo
+        
+        // Asegurarnos de que la imagen se haya descargado correctamente
         if (!img) {
           return wss.sendMessage(m.chat, { text: `❌ Por favor, envía una imagen o video para hacer un sticker.` }, { quoted: m });
         }
 
         let out;
         try {
-          const packstickers = global.db.data.users[m.sender];
-          const texto1 = packstickers?.text1 || `${global.packsticker}`;
-          const texto2 = packstickers?.text2 || `${global.packsticker2}`;
+          // Obtener los valores para los textos del sticker
+          const packstickers = await getUserStickerPack(m.sender);
+          const texto1 = packstickers?.text1 || 'Mi Sticker Pack';
+          const texto2 = packstickers?.text2 || 'Sticker Bot';
 
           // Intentar crear el sticker
           stiker = await sticker(img, false, texto1, texto2);
-          console.log('Sticker generado con éxito: ', stiker);
         } catch (e) {
           console.error('Error al generar el sticker: ', e);
         } finally {
@@ -49,15 +44,15 @@ export default {
             else if (/image/g.test(mime)) out = await uploadImage(img);
             else if (/video/g.test(mime)) out = await uploadFile(img);
 
+            // Si out no es una cadena de texto, se intenta con la imagen
             if (typeof out !== 'string') out = await uploadImage(img);
-            stiker = await sticker(false, out, global.packsticker, global.packsticker2);
-            console.log('Sticker generado en el bloque finally: ', stiker);
+            stiker = await sticker(false, out, 'Sticker Pack', 'Sticker Bot');
           }
         }
       } else if (args[0]) {
-        // Verificar si el argumento es una URL válida
+        // Validamos si el argumento es una URL válida
         if (isUrl(args[0])) {
-          stiker = await sticker(false, args[0], global.packsticker, global.packsticker2);
+          stiker = await sticker(false, args[0], 'Sticker Pack', 'Sticker Bot');
         } else {
           return wss.sendMessage(m.chat, { text: `❌ El URL es incorrecto...` }, { quoted: m });
         }
@@ -67,17 +62,28 @@ export default {
       if (!stiker) stiker = e;
     } finally {
       if (stiker) {
-        console.log('Enviando el sticker: ', stiker);
         wss.sendFile(m.chat, stiker, 'sticker.webp', '', m);
       } else {
-        console.log('No se pudo generar el sticker');
         return wss.sendMessage(m.chat, { text: `❌ Por favor, envía una imagen o video para hacer un sticker.` }, { quoted: m });
       }
     }
   }
 };
 
+// Función para obtener la configuración del usuario (puedes ajustar esta parte a tu lógica)
+const getUserStickerPack = (userId) => {
+  // Aquí podrías hacer que obtengas los datos del usuario desde una base de datos o configurarlos manualmente
+  return {
+    text1: 'Pack Personalizado', // Puedes cambiar estos valores
+    text2: 'Bot de Stickers',
+  };
+};
+
 // Función para validar si el texto es una URL válida
 const isUrl = (text) => {
-  return text.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(jpe?g|gif|png)/, 'gi'));
+  // Verificamos que el texto no sea undefined ni nulo antes de hacer la validación
+  if (text && typeof text === 'string') {
+    return text.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(jpe?g|gif|png)/, 'gi'));
+  }
+  return false;
 };
