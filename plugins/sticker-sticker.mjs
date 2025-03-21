@@ -1,4 +1,4 @@
-import { sticker } from 'file:///home/container/lib/sticker.mjs';
+import { sticker } from '../lib/stickers.mjs';
 import uploadFile from '../lib/uploadFile.mjs';
 import uploadImage from '../lib/uploadImage.mjs';
 import { webp2png } from '../lib/webp2mp4.mjs';
