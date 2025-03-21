@@ -10,13 +10,23 @@ export default {
   exec: async (wss, { m, args, usedPrefix, command }) => {
     let stiker = false;
     try {
-      let q = m.quoted ? m.quoted : m;
-      console.log('q:', q); // Verificamos si m.quoted está bien definido
-      let mime = (q?.msg || q)?.mimetype || q?.mediaType || '';
+      let q = m.quoted ? m.quoted : m; // Verificamos que m.quoted esté definido
+      console.log('m.quoted:', m.quoted);
+      console.log('q:', q); // Verificamos que q esté correctamente asignado
+
+      // Usamos una comprobación más robusta para obtener el mime
+      let mime = '';
+      if (q && (q.msg || q).mimetype) {
+        mime = (q.msg || q).mimetype;
+      } else if (q.mediaType) {
+        mime = q.mediaType;
+      }
+
       console.log('mime:', mime); // Verificamos qué tipo de mime estamos obteniendo
 
       if (/webp|image|video/g.test(mime)) {
-        if (/video/g.test(mime) && (q?.msg || q)?.seconds > 15) {
+        // Comprobamos si es video y si dura más de 15 segundos
+        if (/video/g.test(mime) && (q.msg || q).seconds > 15) {
           return wss.sendMessage(m.chat, { text: `❌ ¡El video no puede durar más de 15 segundos!` }, { quoted: m });
         }
 
