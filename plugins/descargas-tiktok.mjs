@@ -11,7 +11,7 @@ export default {
         }
 
         try {
-            await wss.sendMessage(m.chat, { text: `${emoji} Espere un momento, estoy descargando su video...` }, { quoted: m });
+            await wss.sendMessage(m.chat, { text: `❀ Espere un momento, estoy descargando su video...` }, { quoted: m });
 
             const tiktokData = await tiktokdl(args[0]);
 
@@ -22,7 +22,7 @@ export default {
             const videoURL = tiktokData.data.play;
 
             if (videoURL) {
-                await wss.sendFile(m.chat, videoURL, "tiktok.mp4", { caption: "❀ Aquí tienes tu video." }, { quoted: m });
+                await wss.sendFile(m.chat, videoURL, "tiktok.mp4", { caption: "❏ Aquí tienes tu video." }, { quoted: m });
             } else {
                 return wss.sendMessage(m.chat, { text: "No se pudo descargar." }, { quoted: m });
             }
