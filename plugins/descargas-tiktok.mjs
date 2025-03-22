@@ -1,5 +1,5 @@
+import tiktokdl from 'tiktok-dl';
 import fetch from 'node-fetch';
-const tiktokdl = require('tiktok-dl');
 
 export default {
     commands: ["tiktok", "tt"],
@@ -14,13 +14,13 @@ export default {
         try {
             await wss.sendMessage(m.chat, { text: `❀ Espere un momento, estoy descargando su video...` }, { quoted: m });
 
-            const tiktokData = await tiktokdl(args[0]);
+            const tiktokData = await tiktokdl.getInfo(args[0]);
 
-            if (!tiktokData || !tiktokData.data || !tiktokData.data.play) {
+            if (!tiktokData || !tiktokData.play) {
                 return wss.sendMessage(m.chat, { text: "❀ Error: No se pudo obtener el video." }, { quoted: m });
             }
 
-            const videoURL = tiktokData.data.play;
+            const videoURL = tiktokData.play;
 
             if (videoURL) {
                 await wss.sendFile(m.chat, videoURL, "tiktok.mp4", { caption: "❏ Aquí tienes tu video." }, { quoted: m });
