@@ -19,7 +19,7 @@ export default {
             return acc;
         }, {});
         for (const [category, plugins] of Object.entries(groupedPlugins)) {
-            menu += `\n\n✐ *Categoria ➩* ${category.toUpperCase()}\n`;
+            menu += `\n\n✐ *Categoria ⇨* ${category.toUpperCase()}\n`;
             for (const plugin of plugins) {
                 menu += `> ${plugin.commands.map((command) => usedPrefix + command).join(" - ")}\n`;
                 menu += `> _${plugin.description}_\n`;
