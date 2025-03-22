@@ -1,50 +1,40 @@
 import fetch from 'node-fetch';
 
-const handler = async (m, { conn, text, command }) => {
-    if (!text) {
-        return conn.reply(m.chat, '❌ Por favor proporciona un enlace válido de TikTok.', m);
-    }
-
-    try {
-        const apiUrl = `https://api.dorratz.com/v2/tiktok-dl?url=${encodeURIComponent(text)}`;
-        const response = await fetch(apiUrl);
-        const result = await response.json();
-
-        if (!result || !result.status || !result.data || !result.data.media || !result.data.media.org) {
-            return conn.reply(m.chat, '❌ No se pudo descargar el video. Verifica el enlace e intenta nuevamente.', m);
+export default {
+    commands: ["tiktok", "tt"],
+    description: "Descargar video de TikTok",
+    category: "descargas",
+    flags: [],
+    exec: async (wss, { m, args, usedPrefix }) => {
+        if (!args[0]) {
+            return wss.sendMessage(m.chat, { text: "❌ Por favor proporciona un enlace válido de TikTok." }, { quoted: m });
         }
 
-        const videoUrl = result.data.media.org;
+        try {
+            await wss.sendMessage(m.chat, { text: "❀ Espere un momento, estoy descargando su video..." }, { quoted: m });
 
-        // Obtener información adicional
-        const author = result.data.author?.nickname || 'Desconocido';
-        const username = result.data.author?.username || 'Desconocido';
-        const title = result.data.title || 'Sin título';
-        const likes = result.data.like || '0';
-        const shares = result.data.share || '0';
-        const comments = result.data.comment || '0';
-        const repro = result.data.repro || '0';
+            const apiUrl = `https://api.dorratz.com/v2/tiktok-dl?url=${encodeURIComponent(args[0])}`;
+            const response = await fetch(apiUrl);
+            const result = await response.json();
 
-        const caption = `
-✅ *Video descargado correctamente:*
+            // Verifica la respuesta de la API
+            console.log(result); // Para ver la estructura de la respuesta
 
-👤 Autor: ${author} (${username})
-👍 Me gusta: ${likes}
-🔄 Compartidos: ${shares}
-💬 Comentarios: ${comments}
-`;
+            // Verificación de propiedades de la respuesta
+            if (!result || !result.status || result.status !== 'success' || !result.data || !result.data.media || !result.data.media.org) {
+                return wss.sendMessage(m.chat, { text: "❌ No se pudo obtener el video. Verifica el enlace e intenta nuevamente." }, { quoted: m });
+            }
 
-        // Enviar el video al usuario
-        await conn.sendMessage(m.chat, {
-            video: { url: videoUrl },
-            caption,
-        }, { quoted: m });
-    } catch (error) {
-        console.error(error);
-        conn.reply(m.chat, '❌ Ocurrió un error al intentar descargar el video.', m);
+            const videoUrl = result.data.media.org;
+
+            if (videoUrl) {
+                await wss.sendFile(m.chat, videoUrl, "tiktok.mp4", { caption: "❏ Aquí tienes tu video de TikTok." }, { quoted: m });
+            } else {
+                return wss.sendMessage(m.chat, { text: "❌ No se pudo descargar el video. Intenta nuevamente." }, { quoted: m });
+            }
+        } catch (error1) {
+            console.error(error1);
+            return wss.sendMessage(m.chat, { text: `❌ Ocurrió un error al intentar descargar el video: ${error1.message}` }, { quoted: m });
+        }
     }
 };
-
-handler.command = /^(tt|tiktok)$/i;
-
-export default handler;
