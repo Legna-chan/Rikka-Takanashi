@@ -213,6 +213,67 @@ ${chalk.whiteBright(m.text)}`));
         }
     });
     /**
-     * Puedes manejar más eventos siguiendo el mismo formato: wss.ev.on("event-type", () => {});
+     * Manejo de eventos de actualización de grupo (nombre, descripción, foto, etc.)
      */
+    wss.ev.on('groups.update', (groupUpdates) => {
+        console.log(chalk.green.bold(`
+╭─────────< Rikka Takanashi - Grupo Actualización >──────────╼
+│ ${chalk.cyan("Actualización de grupo recibida")}
+╰───────────────────╼`));
+
+        groupUpdates.forEach(update => {
+            if (update.id) {
+                console.log(`Grupo actualizado: ${chalk.white(update.id)}`);
+            }
+            if (update.subject) {
+                console.log(`Nuevo nombre del grupo: ${chalk.white(update.subject)}`);
+            }
+            if (update.desc) {
+                console.log(`Nueva descripción del grupo: ${chalk.white(update.desc)}`);
+            }
+            if (update.restrict) {
+                console.log(`Restricciones de grupo: ${chalk.white(update.restrict ? 'Habilitado' : 'Deshabilitado')}`);
+            }
+        });
+    });
+
+    /**
+     * Manejo de eventos de actualización de participantes del grupo (entrar, salir, promover, degradar)
+     */
+    wss.ev.on('group-participants.update', (participantUpdate) => {
+        console.log(chalk.green.bold(`
+╭─────────< Rikka Takanashi - Participantes Actualización >──────────╼
+│ ${chalk.cyan("Actualización de participantes de grupo recibida")}
+╰───────────────────╼`));
+
+        participantUpdate.forEach(update => {
+            const { id, participants, action } = update;
+            console.log(`Grupo: ${chalk.white(id)}`);
+            
+            // Acción cuando un participante entra o sale
+            if (action === 'add') {
+                participants.forEach(participant => {
+                    console.log(`Nuevo participante añadido: ${chalk.white(participant)}`);
+                });
+            } else if (action === 'remove') {
+                participants.forEach(participant => {
+                    console.log(`Participante eliminado: ${chalk.white(participant)}`);
+                });
+            }
+
+            // Acción cuando el participante es promovido
+            if (action === 'promote') {
+                participants.forEach(participant => {
+                    console.log(`Participante promovido: ${chalk.white(participant)}`);
+                });
+            }
+
+            // Acción cuando el participante es degradado
+            if (action === 'demote') {
+                participants.forEach(participant => {
+                    console.log(`Participante degradado: ${chalk.white(participant)}`);
+                });
+            }
+        });
+    });
 }
