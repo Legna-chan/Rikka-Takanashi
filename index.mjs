@@ -110,7 +110,7 @@ async function start() {
     */
     wss.ev.on("creds.update", saveCreds);
     /**
-     * Aquí manejaremos la conexíon y desconexíon del cliente.
+     * Aquí manejaremos la conexíon y desconexión del cliente.
     */
     wss.ev.on("connection.update", async ({ lastDisconnect, qr, connection }) => {
         if (qr) {
@@ -213,67 +213,37 @@ ${chalk.whiteBright(m.text)}`));
         }
     });
     /**
-     * Manejo de eventos de actualización de grupo (nombre, descripción, foto, etc.)
+     * Aquí manejaremos los eventos de participación de los grupos.
      */
-    wss.ev.on('groups.update', (groupUpdates) => {
-        console.log(chalk.green.bold(`
-╭─────────< Rikka Takanashi - Grupo Actualización >──────────╼
-│ ${chalk.cyan("Actualización de grupo recibida")}
-╰───────────────────╼`));
+    wss.ev.on("group-participants.update", async (update) => {
+        console.log("Recibiendo evento 'group-participants.update'");
+        console.log("Detalles del evento:", update);
 
-        groupUpdates.forEach(update => {
-            if (update.id) {
-                console.log(`Grupo actualizado: ${chalk.white(update.id)}`);
-            }
-            if (update.subject) {
-                console.log(`Nuevo nombre del grupo: ${chalk.white(update.subject)}`);
-            }
-            if (update.desc) {
-                console.log(`Nueva descripción del grupo: ${chalk.white(update.desc)}`);
-            }
-            if (update.restrict) {
-                console.log(`Restricciones de grupo: ${chalk.white(update.restrict ? 'Habilitado' : 'Deshabilitado')}`);
-            }
-        });
+        if (update.action === "add") {
+            console.log(`Nuevo participante agregado: ${update.participants}`);
+        } else if (update.action === "remove") {
+            console.log(`Participante eliminado: ${update.participants}`);
+        }
+
+        // Aquí tu código que maneja lo que quieras hacer con los participantes.
     });
 
     /**
-     * Manejo de eventos de actualización de participantes del grupo (entrar, salir, promover, degradar)
+     * Aquí manejamos los eventos de actualización de grupos.
      */
-    wss.ev.on('group-participants.update', (participantUpdate) => {
-        console.log(chalk.green.bold(`
-╭─────────< Rikka Takanashi - Participantes Actualización >──────────╼
-│ ${chalk.cyan("Actualización de participantes de grupo recibida")}
-╰───────────────────╼`));
+    wss.ev.on("groups.update", async (update) => {
+        console.log("Recibiendo evento 'groups.update'");
+        console.log("Detalles del evento:", update);
 
-        participantUpdate.forEach(update => {
-            const { id, participants, action } = update;
-            console.log(`Grupo: ${chalk.white(id)}`);
-            
-            // Acción cuando un participante entra o sale
-            if (action === 'add') {
-                participants.forEach(participant => {
-                    console.log(`Nuevo participante añadido: ${chalk.white(participant)}`);
-                });
-            } else if (action === 'remove') {
-                participants.forEach(participant => {
-                    console.log(`Participante eliminado: ${chalk.white(participant)}`);
-                });
-            }
-
-            // Acción cuando el participante es promovido
-            if (action === 'promote') {
-                participants.forEach(participant => {
-                    console.log(`Participante promovido: ${chalk.white(participant)}`);
-                });
-            }
-
-            // Acción cuando el participante es degradado
-            if (action === 'demote') {
-                participants.forEach(participant => {
-                    console.log(`Participante degradado: ${chalk.white(participant)}`);
-                });
-            }
-        });
+        if (update.description) {
+            console.log(`Descripción del grupo actualizada a: ${update.description}`);
+        }
+        if (update.subject) {
+            console.log(`Nombre del grupo actualizado a: ${update.subject}`);
+        }
     });
+
+    /**
+     * Puedes manejar más eventos siguiendo el mismo formato: wss.ev.on("event-type", () => {});
+     */
 }
