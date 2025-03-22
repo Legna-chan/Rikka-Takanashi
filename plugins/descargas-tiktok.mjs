@@ -11,9 +11,9 @@ export default {
         }
 
         try {
-            await wss.sendMessage(m.chat, `${emoji} Espere un momento, estoy descargando su video...`, { quoted: m });
+            await wss.sendMessage(m.chat, `⏳ Espere un momento, estoy descargando su video...`, { quoted: m });
 
-            const tiktokData = await tiktokdl(args[0]);
+            const tiktokData = await tiktokdl(args[0]); // ¿Dónde está definida esta función?
 
             if (!tiktokData || !tiktokData.data || !tiktokData.data.play) {
                 return wss.sendMessage(m.chat, "❀ Error: No se pudo obtener el video.", { quoted: m });
@@ -22,7 +22,7 @@ export default {
             const videoURL = tiktokData.data.play;
 
             if (videoURL) {
-                await wss.sendFile(m.chat, videoURL, "tiktok.mp4", `❀ Aquí tienes tu video. `, { quoted: m });
+                await wss.sendFile(m.chat, videoURL, "tiktok.mp4", `❀ Aquí tienes tu video.`, { quoted: m });
             } else {
                 return wss.sendMessage(m.chat, "No se pudo descargar.", { quoted: m });
             }
@@ -31,5 +31,3 @@ export default {
         }
     }
 };
-
-async
