@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+const tiktokdl = require('tiktokdl');
 
 export default {
     commands: ["tiktok", "tt"],
