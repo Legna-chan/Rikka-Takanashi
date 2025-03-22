@@ -32,8 +32,9 @@
     "chalk": "5.4.1",
     "lowdb": "7.0.1",
     "pino": "9.6.0",
-    "qrcode-terminal": "0.12.0",
-    "node-fetch": "3.3.2"
+    "qrcode-terminal": "0.12.0"
+    "node-fetch": "3.3.2", 
+    "tiktok-dl": "^1.0.0"
   },
   "engines": {
     "node": ">=16.0.0"
