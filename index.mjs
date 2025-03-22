@@ -36,7 +36,7 @@ globalThis.db = await JSONFilePreset("database.json", {
     settings: {},
 });
 await db.read();
-console.log(chalk.green("Base de datos iniciada correctamente."));
+console.log(chalk.green("Base de datos iniciada corréctamente."));
 
 /**
  * Cargamos los plugins.
@@ -100,21 +100,18 @@ async function start() {
         generateHighQualityLinkPreview: true,
         version,
     });
-
     /**
      * Esto es para evitar mensajes molestos de las Pre-Keys en la consola.
      */
     console.info = () => { };
     console.debug = () => { };
-
     /**
      * Esto es para que se guarden las credenciales.
-     */
+    */
     wss.ev.on("creds.update", saveCreds);
-
     /**
-     * Aquí manejaremos la conexión y desconexión del cliente.
-     */
+     * Aquí manejaremos la conexíon y desconexíon del cliente.
+    */
     wss.ev.on("connection.update", async ({ lastDisconnect, qr, connection }) => {
         if (qr) {
             console.log(chalk.green.bold(`
@@ -129,76 +126,80 @@ async function start() {
             });
         }
         if (connection === "close") {
+            /**
+             * Obtenemos el código de estado con el cual se desconectó el bot.
+             */
             const code = new Boom(lastDisconnect?.error)?.output?.statusCode;
+            /**
+             * Usamos switch-case para manejar mejor el error de desconexión.
+             */
             switch (code) {
-                case DisconnectReason.loggedOut: // 401
-                case DisconnectReason.badSession: // 500
-                case DisconnectReason.forbidden: // 403
-                case DisconnectReason.multideviceMismatch: // 411
+                case DisconnectReason.loggedOut: // 401 - Significa que la sesión se cerró en el dispositivo.
+                case DisconnectReason.badSession: // 500 - Significa que la sesión está corructa.
+                case DisconnectReason.forbidden: // 403 - Significa que el bot ya no tiene autorización para volver a conectarse.
+                case DisconnectReason.multideviceMismatch: // 411 - Significa que hay varias sesiones abiertas y no están bien coordinadas.
                     console.log(chalk.red.bold(`
 ╭───────────────────╼
 │ ${chalk.yellow("La sesión se cerró sin posibilidades de reconexión.")}
 ╰───────────────────╼`));
                     console.log(JSON.stringify(lastDisconnect, null, 2));
+                    /**
+                     * Eliminamos la carpeta de sesión.
+                     */
                     await fs.rm(sessionFolder, { recursive: true, force: true }).catch(() => void 0);
+                    /**
+                     * Salimos del proceso con código de estado "1" para indicar que hubo un error grave.
+                     */
                     process.exit(1);
                 default:
                     console.log(chalk.red.bold(`
 ╭───────────────────╼
-│ ${chalk.yellow(`La sesión se cerró con el código de estado "${chalk.white(code)}", reconectando.`)}
+│ ${chalk.yellow(`La sesión se cerró con el código de estado "${chalk.white(code)}", reconéctando.`)}
 ╰───────────────────╼`));
+                    /**
+                     * Ejecutamos de nuevo la función para que el bot se vuelva a reconectar.
+                     */
                     await start();
                     break;
             }
         }
         if (connection === "open") {
+            /**
+             * Usamos la función "jidNormalizedUser" para convertir el id del bot "XXXXXXXX:XX@s.whatsapp.net" a "XXXXXXXX@s.whatsapp.net"
+             */
             const userJid = jidNormalizedUser(wss.user.id);
             const userName = wss.user.name || wss.user.verifiedName || "Desconocido";
             console.log(chalk.green.bold(`
 ╭───────────────────╼
-│ ${chalk.cyan("Conectado con éxito")}
+│ ${chalk.cyan("Conéctado con éxito")}
 │
 │- ${chalk.cyan("Usuario :")} +${chalk.white(userJid.split("@")[0] + " - " + userName)}; 
 │- ${chalk.cyan("Versión de WhatsApp :")} ${chalk.white(version)} es la última ? ${chalk.white(isLatest)} 
 ╰───────────────────╼`));
         }
     });
-
-    /**
-     * Manejando eventos de actualización de grupo.
-     */
-    wss.ev.on('groups.update', (update) => {
-        console.log(chalk.blue("Evento 'groups.update':"));
-        console.log(update);
-    });
-
-    /**
-     * Manejando cambios de participantes en el grupo.
-     */
-    wss.ev.on('group-participants.update', (update) => {
-        console.log(chalk.green("Evento 'group-participants.update':"));
-        console.log(update);
-
-        // Aquí puedes agregar la lógica que necesites. Por ejemplo:
-        if (update.action === 'add') {
-            console.log(`El usuario ${update.participants} fue agregado al grupo.`);
-        }
-        if (update.action === 'remove') {
-            console.log(`El usuario ${update.participants} fue eliminado del grupo.`);
-        }
-    });
-
     /**
      * Aquí manejaremos los mensajes entrantes.
      */
     wss.ev.on("messages.upsert", async ({ messages, type }) => {
+        /**
+         * "notify" para solo procesar mensajes que no sean del propio bot.
+         */
         if (type === "notify" && messages && messages.length !== 0) {
+            /**
+             * Iteramos sobre el array de mensajes
+             */
             for (const message of messages) {
                 const m = serialize(message, wss);
-                if (m && m.chat.endsWith('@g.us')) {
+                /**
+                 * - "@newsletter" => Ignora mensajes recibidos de canales.
+                 * - "@lib" => Ignora mensajes de usuarios cuyo Jid termina en "@lid" y no en "@s.whatsapp.net"
+                 * - "status@broadcast" => Ignora mensajes de los estados de tus contactos.
+                 */
+                if (m && !/(@newsletter$|@lib$)|^status@broadcast$/.test(m.sender)) {
                     console.log(chalk.green.bold(`
 ╭─────────< Rikka Takanashi - Vs 1.0.0 >──────────╼
-│ ${chalk.cyan(`Mensaje recibido en grupo`)}
+│ ${chalk.cyan(`Mensaje recibido`)}
 │
 │- ${chalk.cyan("Chat :")} ${chalk.white(m.chat)}
 │- ${chalk.cyan("Usuario :")} +${chalk.white(m.sender.split("@")[0] + " - " + m.pushName)}
@@ -206,10 +207,12 @@ async function start() {
 ╰╼
 ${chalk.whiteBright(m.text)}`));
                     handler(wss, m);
-                } else {
-                    console.log(chalk.yellow(`Mensaje recibido en un chat privado, no procesado.`));
                 }
+
             }
         }
     });
+    /**
+     * Puedes manejar más eventos siguiendo el mismo formato: wss.ev.on("event-type", () => {});
+     */
 }
