@@ -1,7 +1,7 @@
-    {
+{
   "name": "Rikka Takanashi",
   "version": "1.0.0",
-  "description": "Bot muy simple para whatsapp",
+  "description": "Bot muy simple para WhatsApp",
   "main": "index.mjs",
   "type": "module",
   "scripts": {
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Legna-chan/Rikka-Takanashi.git"
+    "url": "https://github.com/Legna-chan/Rikka-Takanashi.git"
   },
   "keywords": [
     "whatsapp",
@@ -18,7 +18,7 @@
     "node",
     "nodejs"
   ],
-  "author": " Legna",
+  "author": "Legna",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Legna-chan/Rikka-Takanashi/issues"
@@ -32,7 +32,10 @@
     "chalk": "5.4.1",
     "lowdb": "7.0.1",
     "pino": "9.6.0",
-    "qrcode-terminal": "0.12.0", 
+    "qrcode-terminal": "0.12.0",
     "node-fetch": "3.3.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }

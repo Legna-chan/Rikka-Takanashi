@@ -90,31 +90,19 @@ export default async function handler(wss, m) {
         // Prefijos aceptados: . # + ! 
         // Agrega más según tus necesidades.
         if (/^[.#+!]$/.test(usedPrefix) && plugin) {
-            if (db.data.settings.grouponly && !m.isGroup) {
-                return;
-            }
-            if (db.data.settings.privateonly && m.isGroup) {
-                return;
+            // Verificamos si el mensaje proviene de un chat privado
+            if (!m.isGroup) {
+                // En caso de que el mensaje sea privado, enviamos un mensaje de advertencia
+                await wss.sendMessage(m.chat, { text: "Este comando no se puede ejecutar en privado. Debes hacerlo en un grupo.", mentions: [m.sender] }, { quoted: m });
+                return; // Salimos de la función y evitamos la ejecución del comando
             }
 
             /**
-             * Aqui puedes manejar las banderas que consideres necesarias para tu bot.
-             * Aqui 2 ejemplos:
-             */
-            if (plugin.flags.includes("isGroup") && !m.isGroup) {
-                await wss.sendMessage(m.chat, { text: `- El comando *${usedPrefix + command}* solo puede ser ejecutado en grupos.`, mentions: [m.sender] }, { quoted: m });
-                return;
-            }
-            if (plugin.flags.includes("isPrivate") && m.isGroup) {
-                await wss.sendMessage(m.chat, { text: `- El comando *${usedPrefix + command}* solo puede ser ejecutado en el chat privado.`, mentions: [m.sender] }, { quoted: m });
-                return;
-            }
-            /**
-             * Aqui procesamos el plugin, usaremos try-catch para capturar cualquier error que ocurra a la hora de procesar el plugin.
+             * Aquí procesamos el plugin, usaremos try-catch para capturar cualquier error que ocurra a la hora de procesar el plugin.
              */
             try {
                 /**
-                 * Aquí en el objeto puedes pasar todos los valores que quieras asi para poder usarlos dentro de tus comandos.
+                 * Aquí en el objeto puedes pasar todos los valores que quieras así para poder usarlos dentro de tus comandos.
                  */
                 await plugin.exec(wss, { m, text, args, command, usedPrefix, plugin, plugins: Plugin.plugins }); // agrega más valores dentro del { } según tus necesidades.
             } catch (error) {
