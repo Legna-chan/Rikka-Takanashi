@@ -17,10 +17,10 @@ export default {
             const response = await fetch(apiUrl);
             const result = await response.json();
 
-            // Verifica la respuesta de la API
-            console.log(result); // Para ver la estructura de la respuesta
+            // Log para inspeccionar la respuesta de la API
+            console.log('Respuesta de la API:', result);
 
-            // Verificación de propiedades de la respuesta
+            // Verifica que el estado sea exitoso y que los datos estén presentes
             if (!result || !result.status || result.status !== 'success' || !result.data || !result.data.media || !result.data.media.org) {
                 return wss.sendMessage(m.chat, { text: "❌ No se pudo obtener el video. Verifica el enlace e intenta nuevamente." }, { quoted: m });
             }
@@ -33,7 +33,7 @@ export default {
                 return wss.sendMessage(m.chat, { text: "❌ No se pudo descargar el video. Intenta nuevamente." }, { quoted: m });
             }
         } catch (error1) {
-            console.error(error1);
+            console.error('Error al descargar el video:', error1);
             return wss.sendMessage(m.chat, { text: `❌ Ocurrió un error al intentar descargar el video: ${error1.message}` }, { quoted: m });
         }
     }
