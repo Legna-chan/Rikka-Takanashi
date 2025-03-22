@@ -1,5 +1,4 @@
-import tiktokdl from 'tiktok-dl';
-import fetch from 'node-fetch';
+import { downloadVideo } from 'tiktok-download'; // Importa la librería
 
 export default {
     commands: ["tiktok", "tt"],
@@ -14,21 +13,20 @@ export default {
         try {
             await wss.sendMessage(m.chat, { text: `❀ Espere un momento, estoy descargando su video...` }, { quoted: m });
 
-            const tiktokData = await tiktokdl.getInfo(args[0]);
+            // Intenta descargar el video usando el enlace proporcionado
+            const video = await downloadVideo(args[0]);
 
-            if (!tiktokData || !tiktokData.play) {
+            if (!video || !video.download) {
                 return wss.sendMessage(m.chat, { text: "❀ Error: No se pudo obtener el video." }, { quoted: m });
             }
 
-            const videoURL = tiktokData.play;
+            // Obtiene la URL directa del video
+            const videoUrl = video.download();
 
-            if (videoURL) {
-                await wss.sendFile(m.chat, videoURL, "tiktok.mp4", { caption: "❏ Aquí tienes tu video." }, { quoted: m });
-            } else {
-                return wss.sendMessage(m.chat, { text: "No se pudo descargar." }, { quoted: m });
-            }
-        } catch (error1) {
-            return wss.sendMessage(m.chat, { text: `Error: ${error1.message}` }, { quoted: m });
+            // Envía el video al chat
+            await wss.sendFile(m.chat, videoUrl, "tiktok_video.mp4", { caption: "❏ Aquí tienes tu video de TikTok." }, { quoted: m });
+        } catch (error) {
+            return wss.sendMessage(m.chat, { text: `Error: ${error.message}` }, { quoted: m });
         }
     }
 };
