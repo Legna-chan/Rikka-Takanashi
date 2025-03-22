@@ -1,32 +1,28 @@
-import { downloadVideo } from 'tiktok-download'; // Importa la librería
+import fetch from 'node-fetch';
 
-export default {
-    commands: ["tiktok", "tt"],
-    description: "Descargar video de TikTok",
-    category: "descargas",
-    flags: [],
-    exec: async (wss, { m, args, usedPrefix }) => {
-        if (!args[0]) {
-            return wss.sendMessage(m.chat, { text: "✰ Por favor, ingresa un enlace de TikTok." }, { quoted: m });
-        }
+const handler = async (m, { conn, text }) => {
+  if (!text) return conn.reply(m.chat, '🍭 Ingresa la URL del video de TikTok.', m);
 
-        try {
-            await wss.sendMessage(m.chat, { text: `❀ Espere un momento, estoy descargando su video...` }, { quoted: m });
+  const tiktokAPI = `https://apis-starlights-team.koyeb.app/starlight/tiktok2?url=${text}`;
 
-            // Intenta descargar el video usando el enlace proporcionado
-            const video = await downloadVideo(args[0]);
+  try {
+    const res = await fetch(tiktokAPI);
+    const json = await res.json();
 
-            if (!video || !video.download) {
-                return wss.sendMessage(m.chat, { text: "❀ Error: No se pudo obtener el video." }, { quoted: m });
-            }
+    if (!json || !json.video) return conn.reply(m.chat, '✐ No se pudo descargar el video. Verifica que la URL sea correcta.', m);
 
-            // Obtiene la URL directa del video
-            const videoUrl = video.download();
+    await conn.sendMessage(m.chat, { video: { url: json.video }, caption: '❀ Aquí tienes tu video descargado de TikTok.' }, { quoted: m });
 
-            // Envía el video al chat
-            await wss.sendFile(m.chat, videoUrl, "tiktok_video.mp4", { caption: "❏ Aquí tienes tu video de TikTok." }, { quoted: m });
-        } catch (error) {
-            return wss.sendMessage(m.chat, { text: `Error: ${error.message}` }, { quoted: m });
-        }
-    }
+  } catch (e) {
+    conn.reply(m.chat, '🍭 Ocurrió un error al descargar el video.', m);
+    console.log(e);
+  }
 };
+
+handler.help = ['tiktok', 'tt'];
+handler.tags = ['descargas'];
+handler.command = ['tiktok', 'tt'];
+handler.chocolates = 1;
+handler.register = true;
+
+export default handler;
